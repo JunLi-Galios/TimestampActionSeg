@@ -114,7 +114,8 @@ class Trainer:
                 if epoch < start_epochs:
                     batch_boundary = batch_gen.get_single_random(batch_size, batch_input.size(-1))
                 else:
-                    batch_boundary = batch_gen.get_boundary(batch_size, middle_pred.detach())
+#                     batch_boundary = batch_gen.get_boundary(batch_size, middle_pred.detach())
+                    batch_boundary = batch_gen.frame_viterbi(batch_size, middle_pred.detach())
                 batch_boundary = batch_boundary.to(device)
 
                 loss = 0
