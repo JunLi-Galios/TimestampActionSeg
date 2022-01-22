@@ -164,3 +164,8 @@ class BatchGenerator(object):
             boundary_target_tensor[b, :vid_gt.shape[0]] = torch.from_numpy(boundary_target)
 
         return boundary_target_tensor
+
+    
+    def frame_viterbi(self, sequence, length_model, frames):
+        pass
+        
