@@ -105,10 +105,18 @@ class Trainer:
             correct = 0
             total = 0
             while batch_gen.has_next():
+                # batch_input [8, 2048, 5292]
+                # batch_target [8, 5292]
+                # mask [8, 48, 5292] value:{0,1}
+                # batch_input [8, 2048, 5292]
                 batch_input, batch_target, mask, batch_confidence = batch_gen.next_batch(batch_size)
                 batch_input, batch_target, mask = batch_input.to(device), batch_target.to(device), mask.to(device)
                 optimizer.zero_grad()
                 middle_pred, predictions = self.model(batch_input, mask)
+                
+                # middle_pred [8, 64, 5292]
+                # predictions [4, 8, 48, 5292]
+                # batch_boundary [8, 5292] value:{0, -100}
 
                 # Generate pseudo labels after training 30 epochs for getting more accurate labels
                 if epoch < start_epochs:
