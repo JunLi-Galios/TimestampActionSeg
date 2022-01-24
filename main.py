@@ -37,7 +37,7 @@ lr = 0.0005
 num_epochs = 50
 
 # use the full temporal resolution @ 15fps
-sample_rate = 1
+sample_rate = 1 # TODO:check sample_rate
 # sample input features @ 15fps instead of 30 fps
 # for 50salads, and up-sample the output to 30 fps
 if args.dataset == "50salads":
