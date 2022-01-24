@@ -94,7 +94,7 @@ class Trainer:
 
         return loss
 
-    def train(self, save_dir, batch_gen, writer, num_epochs, batch_size, learning_rate, device):
+    def train(self, save_dir, batch_gen, writer, decoder, num_epochs, batch_size, learning_rate, device):
         self.model.train()
         self.model.to(device)
         optimizer = optim.Adam(self.model.parameters(), lr=learning_rate)
@@ -123,7 +123,27 @@ class Trainer:
                     batch_boundary = batch_gen.get_single_random(batch_size, batch_input.size(-1))
                 else:
 #                     batch_boundary = batch_gen.get_boundary(batch_size, middle_pred.detach())
-                    batch_boundary = batch_gen.frame_viterbi(batch_size, middle_pred.detach())
+                    ## TODO 1: transcript
+                    ## TODO 2: self.mean_lengths, buffer
+                    decoder.grammar = SingleTranscriptGrammar(transcript, self.num_classes)
+                    decoder.length_model = PoissonModel(self.mean_lengths)
+                    batch_boundary = []
+                    for b in range(middle_pred.size()[0]): 
+                        log_probs = F.log_softmax(middle_pred[b], dim=0)
+                        log_probs = log_probs - np.max(log_probs)
+                        score, labels, segments = self.decoder.decode(log_probs)
+                        batch_boundary.append(batch_boundary)
+                    
+#                     batch_boundary = []
+#                     for p in predictions:
+#                         stage_boundary = []
+#                         for b in range(p.size()[0]):
+#                             log_probs = F.log_softmax(p[b], dim=1)
+#                             log_probs = log_probs - np.max(log_probs)
+#                             score, labels, segments = self.decoder.decode(log_probs)
+#                             stage_boundary.append(labels)                            
+#                         batch_boundary.append(stage_boundary)
+                        
                 batch_boundary = batch_boundary.to(device)
 
                 loss = 0
