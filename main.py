@@ -10,6 +10,7 @@ import time
 import os
 from eval import evaluate
 import numpy as np
+from viterbi import Frame_Based_Set_Viterbi
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -79,9 +80,10 @@ trainer = Trainer(num_stages, num_layers, num_f_maps, features_dim, num_classes)
 if args.action == "train":
     batch_gen = BatchGenerator(num_classes, actions_dict, gt_path, features_path, sample_rate)
     batch_gen.read_data(vid_list_file)
+    decoder = Frame_Based_Set_Viterbi(None, None, frame_sampling=30)
 
     # Train the model
-    trainer.train(model_dir, batch_gen, writer, num_epochs=num_epochs, batch_size=bz, learning_rate=lr, device=device)
+    trainer.train(model_dir, batch_gen, writer, decoder, num_epochs=num_epochs, batch_size=bz, learning_rate=lr, device=device)
 
 # Predict the output label for each frame in evaluation and output them
 trainer.predict(model_dir, results_dir, features_path, vid_list_file_tst, num_epochs, actions_dict, device, sample_rate)
